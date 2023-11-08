@@ -1,0 +1,73 @@
+version: '3'
+services:
+  ocs-inventory-server1:
+    image: ocsinventory/ocsinventory-server
+    container_name: ocs-inventory-server1
+    environment:
+      - OCS_DB_HOST=db1
+      - OCS_DB_NAME=ocsweb
+      - OCS_DB_USER=ocs
+      - OCS_DB_PWD=ocs
+      - OCS_DB_TYPE=mysql
+      - OCS_SERVER_NAME=server1.domain1.com
+    ports:
+      - "80:80"
+    depends_on:
+      - db1
+
+  ocs-inventory-server2:
+    image: ocsinventory/ocsinventory-server
+    container_name: ocs-inventory-server2
+    environment:
+      - OCS_DB_HOST=db2
+      - OCS_DB_NAME=ocsweb
+      - OCS_DB_USER=ocs
+      - OCS_DB_PWD=ocs
+      - OCS_DB_TYPE=mysql
+      - OCS_SERVER_NAME=server2.domain2.com
+    ports:
+      - "81:80"
+    depends_on:
+      - db2
+
+  ocs-inventory-server3:
+    image: ocsinventory/ocsinventory-server
+    container_name: ocs-inventory-server3
+    environment:
+      - OCS_DB_HOST=db3
+      - OCS_DB_NAME=ocsweb
+      - OCS_DB_USER=ocs
+      - OCS_DB_PWD=ocs
+      - OCS_DB_TYPE=mysql
+      - OCS_SERVER_NAME=server3.domain3.com
+    ports:
+      - "82:80"
+    depends_on:
+      - db3
+
+  db1:
+    image: mysql:5.7
+    container_name: db1
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=ocsweb
+      - MYSQL_USER=ocs
+      - MYSQL_PASSWORD=ocs
+
+  db2:
+    image: mysql:5.7
+    container_name: db2
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=ocsweb
+      - MYSQL_USER=ocs
+      - MYSQL_PASSWORD=ocs
+
+  db3:
+    image: mysql:5.7
+    container_name: db3
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=ocsweb
+      - MYSQL_USER=ocs
+      - MYSQL_PASSWORD=ocs
