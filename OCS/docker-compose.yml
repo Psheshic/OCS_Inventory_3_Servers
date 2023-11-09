@@ -1,73 +1,45 @@
 version: '3'
 services:
-  ocs-inventory-server1:
-    image: ocsinventory/ocsinventory-server
-    container_name: ocs-inventory-server1
+  web:
+    image: ocsinventory/ocsinventory-docker-image:latest
+    container_name: ocsinventory-server
     environment:
-      - OCS_DB_HOST=db1
-      - OCS_DB_NAME=ocsweb
-      - OCS_DB_USER=ocs
-      - OCS_DB_PWD=ocs
-      - OCS_DB_TYPE=mysql
-      - OCS_SERVER_NAME=server1.domain1.com
+      OCS_DBNAME: ocsweb
+      OCS_DBSERVER_READ: ocsinventory-db
+      OCS_DBSERVER_WRITE: ocsinventory-db
+      OCS_DBUSER: ocs
+      OCS_DBPASS: ocs
+    volumes:
+      - ocsdownload:/usr/share/ocsinventory-reports/ocsreports/download/
+      - ocssrv:/etc/ocsinventory-reports/
+      - ocslib:/var/lib/ocsinventory-reports/
+    links:
+      - db
     ports:
-      - "80:80"
-    depends_on:
-      - db1
+      - 80:80
+      - 443:443
 
-  ocs-inventory-server2:
-    image: ocsinventory/ocsinventory-server
-    container_name: ocs-inventory-server2
+  db:
+    image: mysql:5.7
+    container_name: ocsinventory-db
+    restart: always
     environment:
-      - OCS_DB_HOST=db2
-      - OCS_DB_NAME=ocsweb
-      - OCS_DB_USER=ocs
-      - OCS_DB_PWD=ocs
-      - OCS_DB_TYPE=mysql
-      - OCS_SERVER_NAME=server2.domain2.com
+      MYSQL_ROOT_PASSWORD: mdp
+      MYSQL_USER: ocs
+      MYSQL_PASSWORD: ocs
+      MYSQL_DATABASE: ocsweb
+    volumes:
+      - ./sql/:/docker-entrypoint-initdb.d/
+      - ocsdata:/var/lib/mysql
     ports:
-      - "81:80"
-    depends_on:
-      - db2
+      - 3306:3306
 
-  ocs-inventory-server3:
-    image: ocsinventory/ocsinventory-server
-    container_name: ocs-inventory-server3
-    environment:
-      - OCS_DB_HOST=db3
-      - OCS_DB_NAME=ocsweb
-      - OCS_DB_USER=ocs
-      - OCS_DB_PWD=ocs
-      - OCS_DB_TYPE=mysql
-      - OCS_SERVER_NAME=server3.domain3.com
-    ports:
-      - "82:80"
-    depends_on:
-      - db3
-
-  db1:
-    image: mysql:5.7
-    container_name: db1
-    environment:
-      - MYSQL_ROOT_PASSWORD=root
-      - MYSQL_DATABASE=ocsweb
-      - MYSQL_USER=ocs
-      - MYSQL_PASSWORD=ocs
-
-  db2:
-    image: mysql:5.7
-    container_name: db2
-    environment:
-      - MYSQL_ROOT_PASSWORD=root
-      - MYSQL_DATABASE=ocsweb
-      - MYSQL_USER=ocs
-      - MYSQL_PASSWORD=ocs
-
-  db3:
-    image: mysql:5.7
-    container_name: db3
-    environment:
-      - MYSQL_ROOT_PASSWORD=root
-      - MYSQL_DATABASE=ocsweb
-      - MYSQL_USER=ocs
-      - MYSQL_PASSWORD=ocs
+volumes:
+  ocsdata:
+    driver: local
+  ocssrv:
+    driver: local
+  ocslib:
+    driver: local
+  ocsdownload:
+    driver: local
